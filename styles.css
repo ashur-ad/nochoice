@@ -983,12 +983,19 @@ body { font-weight: 400; letter-spacing: 0.002em; }
 .news-field input::placeholder { color: #6a6a65; }
 .news-field input:focus-visible { border-color: #4a4a46; }
 
-/* the consent block: unchecked by default, wording stays put */
+/* the consent block: unchecked by default, wording stays put.
+   The full sentence has to stay visible and next to the box (it is the
+   TCPA consent), so it cannot move behind a link or a "read more". What it
+   CAN do is read as fine print instead of body copy — inset in its own
+   panel, dimmer, tighter — so it stops being the loudest thing here. */
 .news-consent {
-  display: grid; grid-template-columns: auto 1fr; gap: 11px; align-items: start;
+  display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
   font-size: 11.5px; line-height: 1.55; color: #989893; cursor: pointer;
+  padding: 13px 14px; border: 1px solid var(--line-dark); background: #101010;
 }
-.news-consent input { width: 17px; height: 17px; margin-top: 2px; accent-color: #EFEFED; }
+.news-consent input {
+  width: 20px; height: 20px; margin-top: 1px; accent-color: #EFEFED; flex: none;
+}
 .news-consent a { color: #CFCFCA; }
 .news-consent b { color: #CFCFCA; font-weight: 600; }
 
@@ -1000,6 +1007,41 @@ body { font-weight: 400; letter-spacing: 0.002em; }
 .news-submit[disabled] { opacity: .55; cursor: default; }
 .news-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .news-modal .bm-foot { margin-top: 15px; }
+
+/* the confirmation that replaces the form once the sign-up lands */
+.news-done { padding: 18px 0 10px; }
+.news-done-tag { color: #8f8f8a; }
+.news-done .news-h { margin-top: 10px; }
+.news-done .bm-sub { margin-bottom: 0; max-width: 34ch; }
+
+/* ---- phones -------------------------------------------------------
+   `.news-modal .bm-in` (0,2,0) was outweighing the generic mobile rule
+   `.bm-in { width: 100% }` (0,1,0), so the sheet stayed 343px wide and sat
+   flush left inside a 375px dialog — background showing down one side only.
+   Matching the specificity is the fix. The rest is fit: a bottom sheet on a
+   phone should be reachable with a thumb and must survive the keyboard
+   opening, which is what the scroll cap is for. */
+@media (max-width: 560px) {
+  .news-modal .bm-in {
+    width: 100%;
+    padding: 20px 20px max(20px, env(safe-area-inset-bottom));
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .news-h { font-size: 23px; line-height: 1.18; letter-spacing: .03em; margin-top: 14px; }
+  .news-h br { display: none; }              /* let it wrap to the real width */
+  .news-modal .bm-sub { font-size: 13.5px; margin: 10px 0 0; }
+  .news-form { margin-top: 16px; gap: 13px; }
+  .news-lab { margin-bottom: 5px; }
+  /* 16px is the threshold below which iOS Safari zooms the page on focus */
+  .news-field input { font-size: 16px; padding: 13px 14px; }
+  .news-consent { font-size: 11px; padding: 12px 13px; }
+  .news-submit { padding-top: 16px; padding-bottom: 16px; }
+  .news-modal .bm-foot { margin-top: 12px; font-size: 12px; }
+  .news-done { padding: 8px 0 4px; }
+}
 
 /* ============================================================
    PROMO OF THE MONTH

@@ -305,7 +305,9 @@
         '<button class="bm-close" type="button" aria-label="Close">Close</button>' +
       '</div>' +
       '<div class="news-body">' +
-        '<h2 class="news-h">Promos and studio news,<br>straight to your phone.</h2>' +
+        // the space after <br> matters: phones hide the break, and without it
+        // the two halves collide into "news,straight"
+        '<h2 class="news-h">Promos and studio news,<br> straight to your phone.</h2>' +
         '<p class="bm-sub">First look at offers, new services and openings. Nothing else, and you can stop whenever you like.</p>' +
         '<form class="news-form" novalidate>' +
           '<label class="news-field">' +
@@ -381,9 +383,12 @@
       if (!r.ok) { throw new Error(r.status); }
       remember('joined');
       dlg.querySelector('.news-body').innerHTML =
-        '<h2 class="news-h">You&rsquo;re on the list.</h2>' +
-        '<p class="bm-sub">Watch for a text from us. Reply STOP any time and you are off, no hard feelings.</p>';
-      setTimeout(function () { if (dlg.open) { dlg.close(); } }, 2800);
+        '<div class="news-done">' +
+          '<p class="mono-sm news-done-tag">Confirmed</p>' +
+          '<h2 class="news-h">You&rsquo;re all set.</h2>' +
+          '<p class="bm-sub">Watch for a text from us. Reply STOP any time and you are off, no hard feelings.</p>' +
+        '</div>';
+      setTimeout(function () { if (dlg.open) { dlg.close(); } }, 3600);
     }).catch(function () {
       submit.disabled = false;
       submit.innerHTML = 'Sign me up <span class="arr">&rarr;</span>';
