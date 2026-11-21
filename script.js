@@ -439,3 +439,85 @@
     upd();
   });
 })();
+
+
+// Gift cards: collect who the card is for, then hand off to Stripe Checkout.
+// Payment details are never typed on this site; Stripe's hosted page takes
+// them. Until the checkout function exists (window.NC_GIFT_CHECKOUT), the
+// dialog explains that instead of pretending to work.
+(function () {
+  var dlg = document.getElementById('gc-modal');
+  if (!dlg || !window.HTMLDialogElement) { return; }
+  var form = dlg.querySelector('.gc-form');
+  var err = dlg.querySelector('.gc-err');
+  var go = dlg.querySelector('.gc-continue');
+  var GO_HTML = go.innerHTML;
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var current = null;
+  function q(s) { return dlg.querySelector(s); }
+
+  function syncFor() {
+    var self = form.elements['for'].value === 'self';
+    q('.gc-other').hidden = self;
+    q('.gc-self').hidden = !self;
+  }
+  function fail(msg, field) {
+    err.textContent = msg; err.hidden = false;
+    if (field) { field.focus(); }
+  }
+
+  document.querySelectorAll('.gc-buy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      current = { product: b.dataset.gc, pay: +b.dataset.pay, value: +b.dataset.get };
+      var box = current.product === 'box';
+      form.reset(); err.hidden = true;
+      go.disabled = false; go.innerHTML = GO_HTML;
+      q('.gc-card-only').hidden = box;
+      q('.gc-box-only').hidden = !box;
+      q('#gc-modal-kicker').textContent = (box ? 'Gift box' : 'Gift card') +
+        ' · Pay $' + current.pay + ', get $' + current.value;
+      q('#gc-modal-title').textContent = box ? 'Collect it in studio' : 'Who is it for?';
+      syncFor();
+      dlg.showModal();
+    });
+  });
+
+  form.addEventListener('change', function (e) { if (e.target.name === 'for') { syncFor(); } });
+  q('[data-gc-close]').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) { dlg.close(); } });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.hidden = true;
+    var f = form.elements;
+    var order = { product: current.product };
+
+    if (current.product === 'box') {
+      if (!f.order_name.value.trim()) { return fail('Add a name for the order, so the desk knows whose box it is.', f.order_name); }
+      order.pickup = f.pickup.value;
+      order.order_name = f.order_name.value.trim();
+    } else if (f['for'].value === 'other') {
+      if (!f.to_name.value.trim()) { return fail('Add their name. It goes on the card.', f.to_name); }
+      if (!EMAIL.test(f.to_email.value.trim())) { return fail('Check their email address. That is where the card is sent.', f.to_email); }
+      if (!f.from_name.value.trim()) { return fail('Add your name, so they know who it is from.', f.from_name); }
+      order.recipient = {
+        name: f.to_name.value.trim(), email: f.to_email.value.trim(),
+        message: f.message.value.trim(), from: f.from_name.value.trim()
+      };
+    } else {
+      order.recipient = null;                    // Stripe collects the buyer's email
+    }
+
+    var endpoint = window.NC_GIFT_CHECKOUT;
+    if (!endpoint) { return fail('Online checkout is not switched on yet. This is a preview of the page.'); }
+
+    go.disabled = true; go.textContent = 'Opening checkout...';
+    fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (!d || !d.url) { throw new Error('no url'); } location.href = d.url; })
+      .catch(function () {
+        go.disabled = false; go.innerHTML = GO_HTML;
+        fail('Checkout did not open. Please try again, or DM @nochoice_la.');
+      });
+  });
+})();

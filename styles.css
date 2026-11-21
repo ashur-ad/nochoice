@@ -1101,3 +1101,173 @@ body { font-weight: 400; letter-spacing: 0.002em; }
 /* legal pages */
 .legal-date { color: var(--ink-2); margin-top: 16px; }
 .legal-foot { margin-top: 22px; font-size: 14px; color: var(--ink-2); }
+
+/* ============================================================
+   GIFT CARDS (/shop/)
+   From the owners' mockup: centred title with a ruled tagline,
+   the gift box leading a row of three cards. Each card tier is
+   drawn as a card face carrying its own value, tilted on a stage
+   and lifting with a foil sweep on hover. The filled "extra" chip
+   is the one warm tone on the site — the owners want the bonus
+   to be what people notice.
+   ============================================================ */
+
+:root { --gc-chip: #D9CBC4; }
+
+.gc-head { padding: clamp(40px, 6vw, 76px) 0 clamp(26px, 3.4vw, 44px); text-align: center; }
+.gc-title {
+  font-family: var(--display); font-weight: 400; text-transform: uppercase;
+  letter-spacing: .04em; font-size: clamp(44px, 6.6vw, 92px); line-height: 1;
+}
+.gc-tagline {
+  margin-top: clamp(16px, 2vw, 26px);
+  display: flex; align-items: center; justify-content: center; gap: clamp(14px, 3vw, 36px);
+  font-family: var(--sans); font-size: clamp(12px, 1.35vw, 19px); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink);
+}
+.gc-tagline::before, .gc-tagline::after {
+  content: ""; flex: 0 1 112px; border-top: 1px solid var(--ink-2);
+}
+
+.gc-wrap { max-width: 1320px; }
+
+/* Four framed tiles. Every tile carries the same stack — name, pay, get,
+   bonus, delivery, button — so each line sits at the same height across
+   the row and the eye can compare tiers straight across. */
+.gc-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: clamp(12px, 1.4vw, 18px); }
+.gc-tile { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--panel); }
+
+/* box photo shown whole: a square image in a square frame, nothing cropped */
+.gc-box-media { aspect-ratio: 1; overflow: hidden; border-bottom: 1px solid var(--line); }
+.gc-box-media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s cubic-bezier(.22, 1, .36, 1); }
+.gc-box:hover .gc-box-media img { transform: scale(1.03); }
+
+/* 10:13 makes the card stage exactly as tall as the box photo: the box column
+   is 1.3x wider and its photo is square, so the rows below line up */
+.gc-stage {
+  aspect-ratio: 10 / 13; display: grid; place-items: center; overflow: hidden;
+  background: radial-gradient(120% 90% at 30% 20%, #E6E6E3 0%, #D6D6D3 55%, #C9C9C6 100%);
+  border-bottom: 1px solid var(--line);
+}
+.gc-face {
+  position: relative; width: 84%; aspect-ratio: 1.586;        /* a real card's proportions */
+  /* % radius is per-axis, so 4.2% / 6.6% gives round (not oval) corners on a 1.586 card */
+  border-radius: 4.2% / 6.6%; overflow: hidden; background: #BDB9B6;
+  box-shadow: 0 22px 30px -20px rgba(0,0,0,.5), 0 2px 5px rgba(0,0,0,.12);
+  transform: rotate(-7deg);
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s ease;
+}
+/* the owners' own card, cut from their product photo and flattened; the slight
+   zoom pushes the photo's last few edge pixels outside the rounded mask */
+.gc-face img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.035); }
+/* a light sweep crosses the card as it lifts, the way foil catches a lamp */
+.gc-face::after {
+  content: ""; position: absolute; inset: -40% -60%; pointer-events: none;
+  background: linear-gradient(105deg, rgba(255,255,255,0) 40%, rgba(255,255,255,.45) 50%, rgba(255,255,255,0) 60%);
+  transform: translateX(-60%); transition: transform .9s cubic-bezier(.22, 1, .36, 1);
+}
+.gc-tier:hover .gc-face {
+  transform: rotate(-3deg) translateY(-6px);
+  box-shadow: 0 30px 36px -22px rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.12);
+}
+.gc-tier:hover .gc-face::after { transform: translateX(60%); }
+
+/* the lettering: one serif for names and amounts, one tracked sans for labels */
+.gc-body {
+  display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1;
+  padding: clamp(20px, 2vw, 28px) clamp(16px, 1.6vw, 24px) clamp(18px, 1.8vw, 24px);
+}
+.gc-name {
+  font-family: var(--display); font-weight: 400; text-transform: uppercase;
+  letter-spacing: .08em; font-size: clamp(14px, 1.15vw, 16px); line-height: 1.3;
+}
+.gc-pay {
+  margin-top: 16px;
+  font-family: var(--sans); font-weight: 500; font-size: 12px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ink-2);
+}
+.gc-get {
+  margin-top: 4px; font-family: var(--display); font-weight: 400;
+  font-size: clamp(34px, 3.2vw, 48px); line-height: 1; letter-spacing: .01em;
+  font-variant-numeric: lining-nums;
+}
+/* the bonus: the one filled shape on the page, so it is what the eye finds */
+.gc-extra {
+  margin-top: 14px; padding: 8px 16px; background: var(--gc-chip); color: var(--ink);
+  font-family: var(--sans); font-weight: 600; font-size: 12.5px; letter-spacing: .18em; text-transform: uppercase;
+  line-height: 1.2;
+}
+.gc-how-get {
+  margin-top: 12px; margin-bottom: 22px;
+  font-size: 13px; color: var(--ink-2);
+}
+.gc-buy { margin-top: auto; width: 100%; justify-content: center; }
+
+/* how it works */
+.gc-how-grid { display: block; }
+.gc-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 3vw, 40px); }
+.gc-steps li { display: block; padding-top: 18px; border-top: 1px solid var(--ink); }
+.gc-step-n { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; color: var(--ink-2); }
+.gc-steps h3 {
+  margin-top: 14px; font-family: var(--display); font-weight: 400; text-transform: uppercase; letter-spacing: .05em;
+  font-size: clamp(18px, 1.8vw, 22px);
+}
+.gc-steps p { margin-top: 8px; color: var(--ink-2); font-size: 15px; line-height: 1.55; max-width: 40ch; }
+.gc-fine {
+  list-style: none; margin: clamp(28px, 4vw, 44px) 0 0; padding: 0;
+  display: grid; gap: 8px; font-size: 13px; color: var(--ink-2);
+}
+.gc-fine li::before { content: "\2014\00a0"; color: #9a9a96; }
+.gc-fine a { color: var(--ink); }
+
+/* purchase dialog: the booking modal's dark shell, the sign-up form's fields */
+.gc-modal .bm-in { max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain; }
+.gc-modal-h {
+  font-family: var(--display); font-weight: 400; text-transform: uppercase; letter-spacing: .05em;
+  font-size: clamp(20px, 3vw, 26px); margin-top: 18px;
+}
+.gc-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 4px; }
+.gc-seg label { position: relative; }
+.gc-seg input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.gc-seg span {
+  display: block; text-align: center; padding: 13px 8px; cursor: pointer;
+  border: 1px solid var(--line-dark); color: #B9B9B4;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+}
+.gc-seg input:checked + span { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+.gc-seg input:focus-visible + span { outline: 2px solid var(--paper); outline-offset: 2px; }
+.gc-form .news-field { display: block; margin-top: 14px; }
+.gc-form textarea {
+  width: 100%; background: #141412; color: var(--paper); border: 1px solid var(--line-dark);
+  padding: 14px 16px; font-family: var(--sans); font-size: 16px; line-height: 1.45; resize: vertical; min-height: 76px;
+}
+.gc-form textarea::placeholder { color: #6a6a65; }
+.gc-err { margin-top: 14px; }
+.gc-continue { width: 100%; justify-content: center; margin-top: 20px; }
+.gc-other[hidden], .gc-self[hidden], .gc-card-only[hidden], .gc-box-only[hidden], .gc-err[hidden] { display: none; }
+
+/* tablet: box gets its own row, the three cards share the next */
+@media (max-width: 1100px) {
+  .gc-grid { grid-template-columns: repeat(3, 1fr); }
+  .gc-box { grid-column: 1 / -1; flex-direction: row; }
+  .gc-box-media { width: 48%; border-bottom: 0; border-right: 1px solid var(--line); }
+  .gc-box .gc-body { justify-content: center; }
+  .gc-box .gc-buy { margin-top: 4px; max-width: 320px; }
+  .gc-stage { aspect-ratio: 5 / 4; }
+}
+/* phone: one column */
+@media (max-width: 700px) {
+  .gc-grid { grid-template-columns: 1fr; }
+  .gc-box { flex-direction: column; }
+  .gc-box-media { width: 100%; border-right: 0; border-bottom: 1px solid var(--line); }
+  .gc-box .gc-buy { max-width: none; }
+  .gc-stage { aspect-ratio: 16 / 10; }
+  .gc-face { width: 64%; }
+  .gc-steps { grid-template-columns: 1fr; }
+  .gc-tagline::before, .gc-tagline::after { flex-basis: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gc-face, .gc-tier:hover .gc-face { transition: none; transform: rotate(-7deg); }
+  .gc-face::after { display: none; }
+  .gc-box-media img, .gc-box:hover .gc-box-media img { transition: none; transform: none; }
+}
