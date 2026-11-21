@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gift card desk | No Choice</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0C0C0B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="/assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400..700&family=Fragment+Mono&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+/* Staff-only desk page for gift cards. Dark on purpose: it lives on a phone at the
+   counter and must never be mistaken for the customer's own screen. */
+:root {
+  --bg:#0C0C0B; --bg-2:#141413; --surface:#1A1A18; --line:#2C2C28;
+  --fg:#F2F1EF; --fg-2:#A8A8A2; --fg-3:#6E6E68; --rose:#D98C9A; --ok:#8FCB9B; --bad:#F08A7E;
+  --mono:'Fragment Mono',ui-monospace,monospace; --sans:'Familjen Grotesk',system-ui,sans-serif;
+  --display:'Marcellus',Georgia,serif; --r:14px;
+}
+* { box-sizing:border-box; margin:0; }
+html,body { background:var(--bg); color:var(--fg); font-family:var(--sans); -webkit-text-size-adjust:100%; }
+body { min-height:100dvh; }
+[hidden] { display:none !important; }
+.screen { max-width:460px; margin:0 auto; padding:calc(16px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom)); }
+.top { display:flex; align-items:center; justify-content:space-between; min-height:40px; margin-bottom:22px; }
+.top img { display:block; height:22px; width:auto; }
+.mono { font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-2); }
+h1 { font-family:var(--display); font-weight:400; font-size:24px; line-height:1.2; text-transform:uppercase; letter-spacing:.04em; }
+h1::after { content:'.'; color:var(--rose); }
+.lede { color:var(--fg-2); font-size:15px; line-height:1.55; margin-top:10px; }
+.field { margin-top:16px; }
+label.mono { display:block; margin-bottom:8px; }
+input { width:100%; font:inherit; font-size:17px; color:var(--fg); background:var(--surface); border:1px solid var(--line);
+  border-radius:10px; padding:14px; outline:none; }
+input:focus { border-color:var(--fg-2); }
+.btn { display:block; width:100%; font:inherit; font-weight:600; font-size:16px; letter-spacing:.02em; padding:16px; border-radius:10px;
+  border:1px solid var(--fg); background:var(--fg); color:var(--bg); cursor:pointer; }
+.btn.ghost { background:none; color:var(--fg); border-color:var(--line); }
+.btn.rose { background:var(--rose); border-color:var(--rose); color:#1a0f11; }
+.btn:disabled { opacity:.5; cursor:default; }
+.link { background:none; border:none; padding:6px 0; cursor:pointer; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-2); }
+.err { margin-top:14px; color:var(--bad); font-size:15px; line-height:1.45; }
+
+.scanner { position:relative; margin-top:18px; border-radius:var(--r); overflow:hidden; background:#000; border:1px solid var(--line); aspect-ratio:1; }
+.scanner video { width:100%; height:100%; object-fit:cover; display:block; }
+.reticle { position:absolute; inset:18%; border:2px solid rgba(255,255,255,.75); border-radius:12px; pointer-events:none; }
+.scanner.hit .reticle { border-color:var(--ok); }
+.cam-msg { position:absolute; left:0; right:0; bottom:12px; text-align:center; color:#fff; text-shadow:0 1px 3px #000; }
+
+.seg { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:16px; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:4px; }
+.seg button { font:inherit; font-size:14px; padding:10px; border:none; border-radius:7px; background:none; color:var(--fg-2); cursor:pointer; }
+.seg button[aria-pressed="true"] { background:var(--fg); color:var(--bg); font-weight:600; }
+
+.card { margin-top:4px; padding:20px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); }
+.card .holder { font-size:20px; font-weight:600; margin-top:6px; }
+.card .code { font-family:var(--mono); font-size:15px; letter-spacing:.12em; color:var(--fg-2); margin-top:4px; }
+.bal { font-family:var(--display); font-size:52px; line-height:1; margin-top:18px; }
+.bal-of { color:var(--fg-3); font-size:14px; margin-top:6px; }
+.tag { display:inline-block; margin-top:14px; padding:6px 10px; border-radius:6px; font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+.tag.bad { background:rgba(240,138,126,.14); color:var(--bad); }
+.tag.box { background:rgba(217,140,154,.14); color:var(--rose); }
+.hist { margin-top:16px; border-top:1px solid var(--line); }
+.hist div { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); font-size:14px; color:var(--fg-2); }
+.hist b { color:var(--fg); font-weight:500; font-variant-numeric:tabular-nums; }
+
+.amount { font-family:var(--display); font-size:46px; text-align:center; margin-top:8px; font-variant-numeric:tabular-nums; }
+.pad { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px; }
+.pad button { font:inherit; font-size:22px; padding:14px 0; border-radius:10px; border:1px solid var(--line); background:var(--bg-2); color:var(--fg); cursor:pointer; }
+.pad button:active { background:var(--surface); }
+
+.done { text-align:center; padding-top:12vh; }
+.done .big { font-family:var(--display); font-size:58px; margin-top:12px; color:var(--ok); }
+.done .left { font-size:18px; margin-top:16px; }
+.done .vagaro { margin:26px auto 0; max-width:320px; padding:14px; border:1px solid var(--line); border-radius:10px; color:var(--fg-2); font-size:14px; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<!-- SIGN IN -->
+<section class="screen" id="s-login" hidden>
+  <div class="top"><img src="/assets/logo-word-white.png" alt="no choice." onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mono',textContent:'No Choice'}))"><span class="mono">Gift card desk</span></div>
+  <h1>Staff sign in</h1>
+  <p class="lede">For the front desk only. Use the email and password the owners set up for you.</p>
+  <form id="login-form">
+    <div class="field"><label class="mono" for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="field"><label class="mono" for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required></div>
+    <p class="err" id="login-err" hidden></p>
+    <div class="field"><button class="btn" id="login-btn" type="submit">Sign in</button></div>
+  </form>
+</section>
+
+<!-- SCAN -->
+<section class="screen" id="s-scan" hidden>
+  <div class="top"><span class="mono" id="who">Staff</span><button class="link" id="signout">Sign out</button></div>
+  <h1>Scan a gift card</h1>
+  <div class="seg" id="loc">
+    <button data-loc="1" aria-pressed="true">Los Angeles</button>
+    <button data-loc="2" aria-pressed="false">Huntington Beach</button>
+  </div>
+  <div class="scanner" id="scanner">
+    <video id="cam" playsinline muted></video>
+    <div class="reticle"></div>
+    <p class="cam-msg mono" id="cam-msg">Starting camera...</p>
+  </div>
+  <form id="manual-form" class="field">
+    <label class="mono" for="manual">Or type the code</label>
+    <input id="manual" placeholder="NC-XXXX-XXXX" autocapitalize="characters" autocomplete="off" spellcheck="false">
+    <p class="err" id="scan-err" hidden></p>
+    <div class="field"><button class="btn ghost" type="submit">Look up</button></div>
+  </form>
+</section>
+
+<!-- CARD + AMOUNT -->
+<section class="screen" id="s-card" hidden>
+  <div class="top"><button class="link" id="card-back">&larr; Scan another</button><span class="mono" id="card-loc"></span></div>
+  <div class="card">
+    <p class="mono">Gift card</p>
+    <p class="holder" id="c-holder"></p>
+    <p class="code" id="c-code"></p>
+    <p class="bal" id="c-bal"></p>
+    <p class="bal-of" id="c-of"></p>
+    <span class="tag box" id="c-box" hidden></span>
+    <span class="tag bad" id="c-void" hidden>Cancelled, do not accept</span>
+    <div class="hist" id="c-hist"></div>
+  </div>
+  <div id="spend">
+    <p class="mono" style="margin-top:26px;text-align:center">Amount to take off</p>
+    <div class="amount" id="amt">$0.00</div>
+    <div class="pad" id="pad">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button data-k="c">C</button><button>0</button><button data-k="del" aria-label="Delete">&#9003;</button>
+    </div>
+    <div class="field"><button class="btn ghost" id="use-all">Use the whole balance</button></div>
+    <p class="err" id="card-err" hidden></p>
+    <div class="field"><button class="btn rose" id="redeem" disabled>Take $0.00 off</button></div>
+  </div>
+</section>
+
+<!-- DONE -->
+<section class="screen" id="s-done" hidden>
+  <div class="done">
+    <p class="mono">Taken off the card</p>
+    <p class="big" id="d-amt"></p>
+    <p class="left" id="d-left"></p>
+    <p class="vagaro">Now ring the same amount up in Vagaro as a gift card payment so the books match.</p>
+    <div class="field" style="max-width:320px;margin:26px auto 0"><button class="btn" id="d-next">Next card</button></div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/desk/jsQR.js"></script>
+<script>
+(function () {
+  'use strict';
+  // The publishable key is public by design: every table is behind RLS, and the gift card
+  // functions refuse anyone who isn't an active row in `staff`.
+  var sb = supabase.createClient('https://cifymgqcsagznluyjuck.supabase.co', 'sb_publishable_75EZ5by0BfG9SQ6BFpsaKA_qrfDkSN9');
+  var CODE = /NC-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}/;
+  var STUDIO = { 1: 'Los Angeles', 2: 'Huntington Beach' };
+  var $ = function (id) { return document.getElementById(id); };
+  var loc = 1, card = null, cents = 0, stream = null, scanning = false;
+
+  try { loc = Number(localStorage.getItem('nc-desk-loc')) || 1; } catch (e) {}
+
+  function show(id) {
+    ['s-login', 's-scan', 's-card', 's-done'].forEach(function (s) { $(s).hidden = s !== id; });
+    if (id === 's-scan') startCamera(); else stopCamera();
+    window.scrollTo(0, 0);
+  }
+  function err(id, msg) { var n = $(id); n.textContent = msg || ''; n.hidden = !msg; }
+  function money(c) { return '$' + (c / 100).toFixed(2); }
+  // Postgres errors arrive as {message}; ours are written for the desk, so show them as-is.
+  function msg(e) { return (e && e.message) || 'Something went wrong. Try again.'; }
+
+  // ------------------------------------------------------------ sign in
+  $('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var b = $('login-btn'); b.disabled = true; err('login-err');
+    sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pw').value })
+      .then(function (r) { if (r.error) throw r.error; $('pw').value = ''; return enter(); })
+      .catch(function (e) { err('login-err', /invalid/i.test(msg(e)) ? 'Wrong email or password.' : msg(e)); })
+      .then(function () { b.disabled = false; });
+  });
+  $('signout').addEventListener('click', function () { sb.auth.signOut().then(function () { show('s-login'); }); });
+
+  function enter() {
+    return sb.auth.getUser().then(function (r) {
+      var u = r.data && r.data.user;
+      if (!u) { show('s-login'); return; }
+      return sb.from('staff').select('name, location_id, active').eq('id', u.id).maybeSingle().then(function (s) {
+        if (!s.data || !s.data.active) {
+          return sb.auth.signOut().then(function () {
+            show('s-login'); err('login-err', 'This login is not set up as staff yet. Ask an owner.');
+          });
+        }
+        $('who').textContent = s.data.name;
+        try { if (!localStorage.getItem('nc-desk-loc') && s.data.location_id) loc = s.data.location_id; } catch (e) {}
+        setLoc(loc);
+        show('s-scan');
+      });
+    });
+  }
+
+  // ------------------------------------------------------------- studio
+  function setLoc(n) {
+    loc = n;
+    try { localStorage.setItem('nc-desk-loc', String(n)); } catch (e) {}
+    Array.prototype.forEach.call($('loc').children, function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.loc) === n)); });
+  }
+  $('loc').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setLoc(Number(b.dataset.loc)); });
+
+  // -------------------------------------------------------------- camera
+  var canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
+  function startCamera() {
+    $('scanner').classList.remove('hit'); err('scan-err');
+    if (stream) { scanning = true; requestAnimationFrame(tick); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $('cam-msg').textContent = 'No camera here. Type the code below.'; return; }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(function (s) {
+      stream = s; var v = $('cam'); v.srcObject = s; v.play();
+      $('cam-msg').textContent = 'Point at the QR in their email';
+      scanning = true; requestAnimationFrame(tick);
+    }).catch(function (e) {
+      $('cam-msg').textContent = e && e.name === 'NotAllowedError' ? 'Camera blocked. Allow it in settings, or type the code.' : 'Camera unavailable. Type the code below.';
+    });
+  }
+  function stopCamera() {
+    scanning = false;
+    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; $('cam').srcObject = null; }
+  }
+  function tick() {
+    if (!scanning) return;
+    var v = $('cam');
+    if (v.readyState === v.HAVE_ENOUGH_DATA) {
+      var w = 480, h = Math.round(v.videoHeight / v.videoWidth * w) || w;
+      canvas.width = w; canvas.height = h; ctx.drawImage(v, 0, 0, w, h);
+      var hit = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'dontInvert' });
+      if (hit && hit.data) {
+        // The QR is a link (…/gift/#NC-XXXX-XXXX); pull the code out of whatever was scanned.
+        var m = hit.data.toUpperCase().match(CODE);
+        if (m) {
+          scanning = false; $('scanner').classList.add('hit');
+          if (navigator.vibrate) navigator.vibrate(18);
+          return lookup(m[0]);
+        }
+        $('cam-msg').textContent = 'That QR isn’t a No Choice gift card';
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  $('manual-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var raw = $('manual').value.toUpperCase().replace(/[^0-9A-Z]/g, '');
+    if (raw.indexOf('NC') === 0) raw = raw.slice(2);
+    var code = 'NC-' + raw.slice(0, 4) + '-' + raw.slice(4, 8);
+    if (!CODE.test(code) || raw.length !== 8) return err('scan-err', 'Codes look like NC-ABCD-2345.');
+    lookup(code);
+  });
+
+  // -------------------------------------------------------------- lookup
+  function lookup(code) {
+    err('scan-err');
+    sb.rpc('gift_card_lookup', { p_code: code }).then(function (r) {
+      if (r.error) throw r.error;
+      card = Array.isArray(r.data) ? r.data[0] : r.data;
+      renderCard(); setCents(0); err('card-err'); $('manual').value = '';
+      show('s-card');
+    }).catch(function (e) {
+      show('s-scan'); err('scan-err', msg(e));
+    });
+  }
+  function renderCard() {
+    $('card-loc').textContent = STUDIO[loc];
+    $('c-holder').textContent = card.holder || 'Gift card';
+    $('c-code').textContent = card.code;
+    $('c-bal').textContent = money(card.balance_cents);
+    $('c-of').textContent = 'left of ' + money(card.value_cents);
+    var isVoid = card.status !== 'active';
+    $('c-void').hidden = !isVoid;
+    $('c-box').hidden = card.product !== 'box';
+    if (card.product === 'box') $('c-box').textContent = 'Gift box, pickup at ' + (STUDIO[card.pickup_location] || 'studio');
+    $('spend').hidden = isVoid || card.balance_cents <= 0;
+    var names = { issue: 'Bought', bonus: 'Bonus', redeem: 'Used', void: 'Undone', adjust: 'Adjusted', expire: 'Expired' };
+    $('c-hist').innerHTML = (card.history || []).map(function (h) {
+      var d = new Date(h.at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      var where = h.location ? ' · ' + (STUDIO[h.location] || '') : '';
+      return '<div><span>' + d + ' · ' + (names[h.reason] || h.reason) + where + '</span><b>' + (h.cents > 0 ? '+' : '−') + money(Math.abs(h.cents)) + '</b></div>';
+    }).join('');
+  }
+  $('card-back').addEventListener('click', function () { show('s-scan'); });
+
+  // -------------------------------------------------------------- amount
+  function setCents(c) {
+    cents = Math.max(0, Math.min(c, 9999999));
+    $('amt').textContent = money(cents);
+    $('redeem').textContent = 'Take ' + money(cents) + ' off';
+    $('redeem').disabled = cents <= 0;
+    err('card-err', card && cents > card.balance_cents ? 'Only ' + money(card.balance_cents) + ' left on this card.' : '');
+  }
+  $('pad').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.k === 'c') setCents(0);
+    else if (b.dataset.k === 'del') setCents(Math.floor(cents / 10));
+    else setCents(cents * 10 + Number(b.textContent));
+  });
+  $('use-all').addEventListener('click', function () { setCents(card.balance_cents); });
+
+  $('redeem').addEventListener('click', function () {
+    if (cents <= 0 || cents > card.balance_cents) return;
+    var b = this, amount = cents; b.disabled = true; b.textContent = 'Saving...';
+    sb.rpc('redeem_gift_card', { p_code: card.code, p_amount_cents: amount, p_location: loc }).then(function (r) {
+      if (r.error) throw r.error;
+      var row = Array.isArray(r.data) ? r.data[0] : r.data;
+      $('d-amt').textContent = money(amount);
+      $('d-left').textContent = money(row.balance_cents) + ' left on ' + card.code;
+      show('s-done');
+    }).catch(function (e) {
+      err('card-err', msg(e)); b.disabled = false; b.textContent = 'Take ' + money(amount) + ' off';
+    });
+  });
+  $('d-next').addEventListener('click', function () { card = null; show('s-scan'); });
+
+  // ---------------------------------------------------------------- boot
+  // Signed in once, the session stays on this phone, so the desk isn't logging in all day.
+  sb.auth.getSession().then(function (r) { return r.data.session ? enter() : show('s-login'); })
+    .catch(function () { show('s-login'); });
+})();
+</script>
+</body>
+</html>
